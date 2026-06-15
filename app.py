@@ -276,11 +276,13 @@ def inventory_page():
 
         col1, col2 = st.columns([1, 4])
 
-        with col1:
-           if item.get("image_path", "") and os.path.exists(item["image_path"]):
-    st.image(item["image_path"], width=140)
-else:
-    st.write("No Image")
+       with col1:
+
+    if item.get("image_path", "") and os.path.exists(item["image_path"]):
+        st.image(item["image_path"], width=140)
+
+    else:
+        st.write("No Image")
 
         with col2:
             st.subheader(item["name"])
