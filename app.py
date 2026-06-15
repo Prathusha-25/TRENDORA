@@ -13,10 +13,7 @@ from data import (
     CATEGORIES,
 )
 
-st.set_page_config(
-    page_title="Trendora",
-    layout="wide"
-)
+st.set_page_config(page_title="Trendora", layout="wide")
 
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
@@ -33,27 +30,16 @@ def logo():
     with col2:
         try:
             st.image("Assets/images/logos/image.png", width=280)
-        except:
+        except Exception:
             pass
 
 
 def landing_page():
     logo()
 
-    st.markdown(
-        "<h1 style='text-align:center;color:#D4AF37;'>Trendora</h1>",
-        unsafe_allow_html=True
-    )
-
-    st.markdown(
-        "<h3 style='text-align:center;'>Your Smart Fashion Business Partner</h3>",
-        unsafe_allow_html=True
-    )
-
-    st.markdown(
-        "<p style='text-align:center;'>Trends. Inventory. Growth.</p>",
-        unsafe_allow_html=True
-    )
+    st.markdown("<h1 style='text-align:center;color:#D4AF37;'>Trendora</h1>", unsafe_allow_html=True)
+    st.markdown("<h3 style='text-align:center;'>Your Smart Fashion Business Partner</h3>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align:center;'>Trends. Inventory. Growth.</p>", unsafe_allow_html=True)
 
     st.divider()
 
@@ -77,15 +63,7 @@ def sidebar():
 
     menu = st.sidebar.radio(
         "Navigation",
-        [
-            "Dashboard",
-            "Trends",
-            "Inventory",
-            "Pricing",
-            "Forecast",
-            "Wholesalers",
-            "Profile"
-        ]
+        ["Dashboard", "Trends", "Inventory", "Pricing", "Forecast", "Wholesalers", "Profile"]
     )
 
     st.session_state.page = menu
@@ -117,15 +95,11 @@ def dashboard():
     st.divider()
 
     st.subheader("Trending This Week")
-
     cols = st.columns(4)
 
     for i, trend in enumerate(TRENDS[:4]):
         with cols[i]:
-            st.success(
-                f"{trend['name']}\n\n"
-                f"Heat: {trend['heat']} | {trend['direction']}"
-            )
+            st.success(f"{trend['name']}\n\nHeat: {trend['heat']} | {trend['direction']}")
 
     st.divider()
 
@@ -135,22 +109,12 @@ def dashboard():
         st.subheader("Inventory Status")
         status_count = inventory_df["status"].value_counts().reset_index()
         status_count.columns = ["Status", "Count"]
-        fig = px.pie(
-            status_count,
-            values="Count",
-            names="Status",
-            hole=0.4
-        )
+        fig = px.pie(status_count, values="Count", names="Status", hole=0.4)
         st.plotly_chart(fig, use_container_width=True)
 
     with col2:
         st.subheader("Trend Heat by Category")
-        fig = px.bar(
-            trends_df,
-            x="name",
-            y="heat",
-            color="urgency"
-        )
+        fig = px.bar(trends_df, x="name", y="heat", color="urgency")
         st.plotly_chart(fig, use_container_width=True)
 
     st.divider()
@@ -200,29 +164,35 @@ def inventory_page():
     st.subheader("Add New Product")
 
     product_name = st.text_input("Product Name")
+
     category = st.selectbox(
         "Category",
         ["Tops", "Bottoms", "Dresses", "Sets", "Outerwear", "Jewellery", "Footwear"]
     )
+
     qty = st.number_input("Quantity", min_value=0, step=1)
     reorder_point = st.number_input("Reorder Point", min_value=0, step=1)
     cost = st.number_input("Cost Price", min_value=0)
     selling_price = st.number_input("Selling Price", min_value=0)
-    image = st.file_uploader("Upload Product Image", type=["png", "jpg", "jpeg"])
+
+    image = st.file_uploader(
+        "Upload Product Image",
+        type=["png", "jpg", "jpeg"]
+    )
 
     if st.button("Add Product", use_container_width=True):
         image_path = ""
 
         if image is not None:
-    os.makedirs("Uploads", exist_ok=True)
+            os.makedirs("Uploads", exist_ok=True)
 
-    image_path = os.path.join(
-        "Uploads",
-        f"{len(st.session_state.inventory)+1}_{image.name}"
-    )
+            image_path = os.path.join(
+                "Uploads",
+                f"{len(st.session_state.inventory) + 1}_{image.name}"
+            )
 
-    with open(image_path, "wb") as f:
-        f.write(image.getbuffer())
+            with open(image_path, "wb") as f:
+                f.write(image.getbuffer())
 
         status = "HEALTHY"
 
@@ -232,7 +202,7 @@ def inventory_page():
             status = "REORDER NOW"
 
         new_product = {
-            "sku": f"SKU-{len(st.session_state.inventory)+1}",
+            "sku": f"SKU-{len(st.session_state.inventory) + 1}",
             "name": product_name,
             "qty": qty,
             "reorder_point": reorder_point,
@@ -258,6 +228,7 @@ def inventory_page():
     st.subheader("Current Inventory")
 
     search = st.text_input("Search Inventory")
+
     filter_status = st.selectbox(
         "Filter Status",
         ["All", "REORDER NOW", "HEALTHY", "OVERSTOCK", "DEAD STOCK", "OUT OF STOCK"]
@@ -276,13 +247,11 @@ def inventory_page():
 
         col1, col2 = st.columns([1, 4])
 
-       with col1:
-
-    if item.get("image_path", "") and os.path.exists(item["image_path"]):
-        st.image(item["image_path"], width=140)
-
-    else:
-        st.write("No Image")
+        with col1:
+            if item.get("image_path", "") and os.path.exists(item["image_path"]):
+                st.image(item["image_path"], width=140)
+            else:
+                st.write("No Image")
 
         with col2:
             st.subheader(item["name"])
