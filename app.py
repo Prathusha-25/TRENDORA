@@ -214,10 +214,15 @@ def inventory_page():
         image_path = ""
 
         if image is not None:
-            os.makedirs("Uploads", exist_ok=True)
-            image_path = os.path.join("Uploads", image.name)
-            with open(image_path, "wb") as f:
-                f.write(image.getbuffer())
+    os.makedirs("Uploads", exist_ok=True)
+
+    image_path = os.path.join(
+        "Uploads",
+        f"{len(st.session_state.inventory)+1}_{image.name}"
+    )
+
+    with open(image_path, "wb") as f:
+        f.write(image.getbuffer())
 
         status = "HEALTHY"
 
@@ -272,10 +277,10 @@ def inventory_page():
         col1, col2 = st.columns([1, 4])
 
         with col1:
-            if item.get("image_path", ""):
-                st.image(item["image_path"], width=140)
-            else:
-                st.write("No Image")
+           if item.get("image_path", "") and os.path.exists(item["image_path"]):
+    st.image(item["image_path"], width=140)
+else:
+    st.write("No Image")
 
         with col2:
             st.subheader(item["name"])
